@@ -1,0 +1,30 @@
+const express = require("express");
+const cors = require("cors");
+const { PORT } = require("./utils/constants");
+const connectDB = require("./configs/db");
+const { inngest, functions } = require("./inngest/index");
+const { serve } = require("inngest/express");
+
+const app = express();
+
+app.use(express.json());
+app.use(cors());
+
+app.get("/", (req, res) => {
+  res.send("Homepage");
+});
+
+app.use("/api/inngest", serve({ client: inngest, functions }));
+
+const startServer = async () => {
+  try {
+    await connectDB();
+    app.listen(PORT, () => {
+      console.log(`Listening on port ${PORT}`);
+    });
+  } catch (err) {
+    console.log(err.message);
+  }
+};
+
+startServer();

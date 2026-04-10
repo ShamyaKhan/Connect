@@ -4,11 +4,13 @@ const { PORT } = require("./utils/constants");
 const connectDB = require("./configs/db");
 const { inngest, functions } = require("./inngest/index");
 const { serve } = require("inngest/express");
+const { clerkMiddleware } = require("@clerk/express");
 
 const app = express();
 
 app.use(express.json());
 app.use(cors());
+app.use(clerkMiddleware());
 
 app.get("/", (req, res) => {
   res.send("Homepage");

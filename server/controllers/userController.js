@@ -3,6 +3,7 @@ const User = require("../models/User");
 const fs = require("fs");
 const { IMAGEKIT_URL_ENDPOINT } = require("../utils/constants");
 const Connection = require("../models/Connection");
+const Post = require("../models/Post");
 
 const getUserData = async () => {
   try {
@@ -264,6 +265,23 @@ const acceptConnectionRequest = async (req, res) => {
   }
 };
 
+const getUserProfiles = async (req, res) => {
+  try {
+    const { profileId } = req.body;
+    const profile = await User.findById(profileId);
+
+    if (!profile) {
+      return res.json({ success: false, message: "Profile not found!" });
+    }
+
+    const posts = await Post.find({ user: profileId }).populate("user");
+
+    res.json({ success: true, profile, posts });
+  } catch (err) {
+    res.json({ success: false, message: err.message });
+  }
+};
+
 module.exports = {
   getUserData,
   updateUserData,
@@ -273,4 +291,5 @@ module.exports = {
   sendConnectionRequest,
   getUserConnections,
   acceptConnectionRequest,
+  getUserProfiles,
 };

@@ -6,6 +6,7 @@ const { inngest, functions } = require("./inngest/index");
 const { serve } = require("inngest/express");
 const { clerkMiddleware } = require("@clerk/express");
 const userRouter = require("./routes/userRoutes");
+const postRouter = require("./routes/postRoutes");
 
 const app = express();
 
@@ -18,8 +19,8 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/inngest", serve({ client: inngest, functions }));
-
 app.use("/api/user", userRouter);
+app.use("/api/post", postRouter);
 
 const startServer = async () => {
   try {

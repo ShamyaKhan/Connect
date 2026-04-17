@@ -9,6 +9,7 @@ const {
   sendConnectionRequest,
   acceptConnectionRequest,
   getUserConnections,
+  getUserProfiles,
 } = require("../controllers/userController");
 const { upload } = require("../configs/multer");
 
@@ -37,5 +38,7 @@ router.post("/connect", protect, sendConnectionRequest);
 router.post("/accept", protect, acceptConnectionRequest);
 
 router.get("/connections", protect, getUserConnections);
+
+router.post("/profiles", getUserProfiles);
 
 module.exports = router;

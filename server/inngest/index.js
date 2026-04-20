@@ -131,6 +131,14 @@ const sendNewConnectionRequestReminder = inngest.createFunction(
   },
 );
 
+const deleteStory = inngest.createFunction(
+  {
+    id: "story-delete",
+    triggers: [{ event: "app/story.delete" }],
+  },
+  async () => {},
+);
+
 // Create an empty array where we'll export future Inngest functions
 const functions = [
   syncUserCreation,

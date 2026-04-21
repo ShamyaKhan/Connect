@@ -2,6 +2,7 @@ const fs = require("fs");
 const imagekit = require("../configs/imagekit");
 const Story = require("../models/Story");
 const User = require("../models/User");
+const { inngest } = require("../inngest");
 
 const addUserStory = async (req, res) => {
   try {
@@ -28,6 +29,11 @@ const addUserStory = async (req, res) => {
       background_color,
     });
 
+    // delete story after 24 hours
+    await inngest.send({
+      name: "app/story.delete",
+      data: { storyId: story._id },
+    });
     res.json({ success: true, message: "Story Created!" });
   } catch (err) {
     res.json({ success: false, message: err.message });

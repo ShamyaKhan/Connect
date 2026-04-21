@@ -3,6 +3,7 @@ const User = require("../models/User");
 const Connection = require("../models/Connection");
 const { FRONTEND_URL } = require("../utils/constants");
 const sendEmail = require("../configs/nodemailer");
+const Story = require("../models/Story");
 
 // Create a client to send and receive events
 const inngest = new Inngest({ id: "Connect" });
@@ -136,7 +137,15 @@ const deleteStory = inngest.createFunction(
     id: "story-delete",
     triggers: [{ event: "app/story.delete" }],
   },
-  async () => {},
+  async ({ event, step }) => {
+    const { storyId } = event.data;
+    const in24Hours = new Date(Date.now() + 24 * 60 * 60 * 1000);
+    await step.sleepUntil("wait-for-24-hours", in24Hours);
+    await step.run("delete-story", async () => {
+      await Story.findByIdAndDelete(storyId);
+      return { message: "Story deleted" };
+    });
+  },
 );
 
 // Create an empty array where we'll export future Inngest functions
@@ -145,6 +154,7 @@ const functions = [
   syncUserUpdation,
   syncUserDeletion,
   sendNewConnectionRequestReminder,
+  deleteStory,
 ];
 
 module.exports = { inngest, functions };

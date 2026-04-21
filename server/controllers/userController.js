@@ -4,6 +4,7 @@ const fs = require("fs");
 const { IMAGEKIT_URL_ENDPOINT } = require("../utils/constants");
 const Connection = require("../models/Connection");
 const Post = require("../models/Post");
+const { inngest } = require("../inngest");
 
 const getUserData = async () => {
   try {
@@ -183,7 +184,14 @@ const sendConnectionRequest = async (req, res) => {
     });
 
     if (!connection) {
-      await Connection.create({ from_user_id: userId, to_user_id: id });
+      const newConnection = await Connection.create({
+        from_user_id: userId,
+        to_user_id: id,
+      });
+      await inngest.send({
+        name: "app/connection-request",
+        data: { connectionId: newConnection._id },
+      });
       return res.json({
         success: true,
         message: "Request sent successfully",

@@ -8,6 +8,7 @@ const { clerkMiddleware } = require("@clerk/express");
 const userRouter = require("./routes/userRoutes");
 const postRouter = require("./routes/postRoutes");
 const storyRouter = require("./routes/storyRoutes");
+const messageRouter = require("./routes/messageRoutes");
 
 const app = express();
 
@@ -23,6 +24,7 @@ app.use("/api/inngest", serve({ client: inngest, functions }));
 app.use("/api/user", userRouter);
 app.use("/api/post", postRouter);
 app.use("/api/story", storyRouter);
+app.use("/api/message", messageRouter);
 
 const startServer = async () => {
   try {

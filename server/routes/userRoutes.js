@@ -12,6 +12,7 @@ const {
   getUserProfiles,
 } = require("../controllers/userController");
 const { upload } = require("../configs/multer");
+const { getRecentUserMessages } = require("../controllers/messageController");
 
 const router = express.Router();
 
@@ -40,5 +41,7 @@ router.post("/accept", protect, acceptConnectionRequest);
 router.get("/connections", protect, getUserConnections);
 
 router.post("/profiles", getUserProfiles);
+
+router.get("/recent-messages", protect, getRecentUserMessages);
 
 module.exports = router;

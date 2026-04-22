@@ -1,9 +1,10 @@
-const { Inngest } = require("inngest");
+const { Inngest, cron } = require("inngest");
 const User = require("../models/User");
 const Connection = require("../models/Connection");
 const { FRONTEND_URL } = require("../utils/constants");
 const sendEmail = require("../configs/nodemailer");
 const Story = require("../models/Story");
+const Message = require("../models/Message");
 
 // Create a client to send and receive events
 const inngest = new Inngest({ id: "Connect" });
@@ -148,6 +149,49 @@ const deleteStory = inngest.createFunction(
   },
 );
 
+const sendNotificationOfUnseenMessages = inngest.createFunction(
+  {
+    id: "send-unseen-messages-notification",
+  },
+  { cron: "TZ=America/New_York 0 9 * * *" }, // everyday ay 9am
+  async ({ step }) => {
+    const messages = await Message.find({ seen: false }).populate("to_user_id");
+    const unseenCount = {};
+
+    messages.map((message) => {
+      unseenCount[message.to_user_id._id] =
+        (unseenCount[message.to_user_id._id] || 0) + 1;
+    });
+
+    for (const userId in unseenCount) {
+      const user = await User.findById(userId);
+      const subject = `You have ${unseenCount[userId]} unseen messages`;
+
+      const body = `
+        <div style="font-family: Arial, sans-serif; padding: 20px;">
+          <h2>Hi ${user.full_name}</h2>
+          <p>You have ${unseenCount[userId]} unseen messages</p>
+          <p>Click 
+            <a href="${FRONTEND_URL}/messages" style="color: #10b981;">
+              here
+            </a>
+            to view them
+          </p>
+          <br>
+          <p>Thanks,<br>Pingup - Stay Connected</p>
+        </div>`;
+
+      await sendEmail({
+        to: user.email,
+        subject,
+        body,
+      });
+    }
+
+    return { message: "Notification Sent!" };
+  },
+);
+
 // Create an empty array where we'll export future Inngest functions
 const functions = [
   syncUserCreation,
@@ -155,6 +199,7 @@ const functions = [
   syncUserDeletion,
   sendNewConnectionRequestReminder,
   deleteStory,
+  sendNotificationOfUnseenMessages,
 ];
 
 module.exports = { inngest, functions };

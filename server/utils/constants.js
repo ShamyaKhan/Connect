@@ -12,6 +12,9 @@ const SENDER_EMAIL = process.env.SENDER_EMAIL;
 const SMTP_USER = process.env.SMTP_USER;
 const SMTP_PASSWORD = process.env.SMTP_PASSWORD;
 
+const CLERK_PUBLISHABLE_KEY = process.env.CLERK_PUBLISHABLE_KEY;
+const CLERK_SECRET_KEY = process.env.CLERK_SECRET_KEY;
+
 module.exports = {
   PORT,
   FRONTEND_URL,
@@ -22,4 +25,6 @@ module.exports = {
   SENDER_EMAIL,
   SMTP_USER,
   SMTP_PASSWORD,
+  CLERK_PUBLISHABLE_KEY,
+  CLERK_SECRET_KEY,
 };

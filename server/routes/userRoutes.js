@@ -13,6 +13,7 @@ const {
 } = require("../controllers/userController");
 const { upload } = require("../configs/multer");
 const { getRecentUserMessages } = require("../controllers/messageController");
+const { requireAuth } = require("@clerk/express");
 
 const router = express.Router();
 

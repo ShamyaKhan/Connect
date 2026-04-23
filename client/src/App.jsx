@@ -12,8 +12,11 @@ import { useUser, useAuth } from "@clerk/react";
 import Layout from "./pages/Layout";
 import { Toaster } from "react-hot-toast";
 import { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { fetchUser } from "./features/userSlice";
 
 function App() {
+  const dispatch = useDispatch();
   const { user } = useUser();
   const { getToken } = useAuth();
 
@@ -21,12 +24,13 @@ function App() {
     const fetchData = async () => {
       if (user) {
         const token = await getToken();
-        console.log(token);
+        console.log("token from frontend", token);
+        dispatch(fetchUser(token));
       }
     };
 
     fetchData();
-  }, [user]);
+  }, [user, getToken, dispatch]);
 
   return (
     <>

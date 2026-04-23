@@ -5,10 +5,12 @@ const { IMAGEKIT_URL_ENDPOINT } = require("../utils/constants");
 const Connection = require("../models/Connection");
 const Post = require("../models/Post");
 const { inngest } = require("../inngest");
+const { getAuth } = require("@clerk/express");
 
-const getUserData = async () => {
+const getUserData = async (req, res) => {
   try {
-    const { userId } = await req.auth();
+    const { userId } = req.auth();
+    console.log("userId from handler", userId);
     const user = await User.findById(userId);
 
     if (!user) {

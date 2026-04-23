@@ -1,6 +1,7 @@
+require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
-const { PORT } = require("./utils/constants");
+const { PORT, CLERK_SECRET_KEY } = require("./utils/constants");
 const connectDB = require("./configs/db");
 const { inngest, functions } = require("./inngest/index");
 const { serve } = require("inngest/express");
@@ -14,6 +15,7 @@ const app = express();
 
 app.use(express.json());
 app.use(cors());
+app.use(express.urlencoded({ extended: true }));
 app.use(clerkMiddleware());
 
 app.get("/", (req, res) => {

@@ -23,7 +23,8 @@ function App() {
   useEffect(() => {
     const fetchData = async () => {
       if (user) {
-        const token = await getToken();
+        console.log("User from frontend", user);
+        const token = await getToken({ template: "default" });
         console.log("token from frontend", token);
         dispatch(fetchUser(token));
       }

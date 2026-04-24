@@ -25,7 +25,7 @@ const getUserData = async (req, res) => {
 
 const updateUserData = async (req, res) => {
   try {
-    const { userId } = await req.auth();
+    const { userId } = req.auth();
     let { username, bio, full_name, location } = req.body;
 
     const tempUser = await User.findById(userId);

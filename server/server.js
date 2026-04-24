@@ -14,9 +14,14 @@ const messageRouter = require("./routes/messageRoutes");
 const app = express();
 
 app.use(express.json());
-app.use(cors());
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  }),
+);
 app.use(express.urlencoded({ extended: true }));
-app.use(clerkMiddleware());
+app.use(clerkMiddleware({ clockSkewInMs: 10000 }));
 
 app.get("/", (req, res) => {
   res.send("Homepage");

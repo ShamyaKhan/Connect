@@ -1,8 +1,9 @@
-const { getAuth, clerkClient } = require("@clerk/express");
+const { getAuth } = require("@clerk/express");
 
 const protect = async (req, res, next) => {
   try {
     console.log("Authorization header:", req.headers.authorization);
+    console.log("req.auth()", req.auth());
     const { userId } = req.auth();
     console.log("userId from middleware ", userId);
 

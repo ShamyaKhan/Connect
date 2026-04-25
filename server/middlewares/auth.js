@@ -3,8 +3,8 @@ const { getAuth } = require("@clerk/express");
 const protect = async (req, res, next) => {
   try {
     console.log("Authorization header:", req.headers.authorization);
-    console.log("req.auth()", req.auth());
-    const { userId } = req.auth();
+    console.log("getAuth(req)", getAuth(req));
+    const { userId } = getAuth(req);
     console.log("userId from middleware ", userId);
 
     if (!userId) {

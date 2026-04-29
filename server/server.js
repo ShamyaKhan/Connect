@@ -21,7 +21,7 @@ app.use(
   }),
 );
 app.use(express.urlencoded({ extended: true }));
-app.use(clerkMiddleware({ clockSkewInMs: 10000, secretKey: CLERK_SECRET_KEY }));
+app.use(clerkMiddleware());
 
 app.get("/", (req, res) => {
   res.send("Homepage");
@@ -38,10 +38,6 @@ const startServer = async () => {
     await connectDB();
     app.listen(PORT, () => {
       console.log(`Listening on port ${PORT}`);
-      console.log(
-        "Secret Key Loaded:",
-        process.env.CLERK_SECRET_KEY ? "YES" : "NO",
-      );
     });
   } catch (err) {
     console.log(err.message);

@@ -3,6 +3,7 @@ const imagekit = require("../configs/imagekit");
 const Story = require("../models/Story");
 const User = require("../models/User");
 const { inngest } = require("../inngest");
+const { IMAGEKIT_URL_ENDPOINT } = require("../utils/constants");
 
 const addUserStory = async (req, res) => {
   try {
@@ -13,12 +14,24 @@ const addUserStory = async (req, res) => {
 
     // upload media to imagekit
     if (media_type === "image" || media_type === "video") {
-      const fileBuffer = fs.readFileSync(media.path);
+      //const fileBuffer = fs.readFileSync(media.path);
+      const base64File = media.buffer.toString("base64");
       const response = await imagekit.files.upload({
-        file: fileBuffer,
+        file: base64File,
         fileName: media.originalname,
+        folder: "stories",
       });
-      media_url = response.url;
+
+      media_url =
+        media_type === "image"
+          ? imagekit.helper.buildSrc({
+              src: response.filePath,
+              urlEndpoint: IMAGEKIT_URL_ENDPOINT,
+              transformation: [
+                { quality: "auto", format: "webp", width: "1280" },
+              ],
+            })
+          : response.url;
     }
 
     const story = await Story.create({

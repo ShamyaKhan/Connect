@@ -3,18 +3,16 @@ import api from "../api/axios";
 import toast from "react-hot-toast";
 
 export const fetchUser = createAsyncThunk("user/fetchUser", async (token) => {
-  console.log("userSlice token", token);
   const { data } = await api.get("/api/user/data", {
     headers: { Authorization: `Bearer ${token}` },
   });
-  console.log("userSlice data", data);
   return data.success ? data.user : null;
 });
 
 export const updateUser = createAsyncThunk(
   "user/update",
   async ({ token, userData }) => {
-    const { data } = await api.get("/api/user/update", userData, {
+    const { data } = await api.post("/api/user/update", userData, {
       headers: { Authorization: `Bearer ${token}` },
     });
 

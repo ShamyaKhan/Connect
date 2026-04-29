@@ -10,7 +10,6 @@ const { getAuth } = require("@clerk/express");
 const getUserData = async (req, res) => {
   try {
     const { userId } = req.auth();
-    console.log("userId from handler", userId);
     const user = await User.findById(userId);
 
     if (!user) {

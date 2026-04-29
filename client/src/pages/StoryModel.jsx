@@ -34,7 +34,30 @@ const StoryModel = ({ setShowModel, fetchStories }) => {
           setPreviewUrl(null);
           return;
         }
+
         const video = document.createElement("video");
+        video.preload = "metadata";
+
+        video.onloadedmetadata = () => {
+          window.URL.revokeObjectURL(video.src);
+          if (video.duration > MAX_VIDEO_DURATION) {
+            toast.error("Video duration cannot exceed 1 minute");
+            setMedia(null);
+            setPreviewUrl(null);
+          } else {
+            setMedia(file);
+            setPreviewUrl(URL.createObjectURL(file));
+            setText("");
+            setMode("media");
+          }
+        };
+
+        video.src = URL.createObjectURL(file);
+      } else if (file.type.startsWith("image")) {
+        setMedia(file);
+        setPreviewUrl(URL.createObjectURL(file));
+        setText("");
+        setMode("media");
       }
     }
   };
@@ -155,7 +178,6 @@ const StoryModel = ({ setShowModel, fetchStories }) => {
               className="hidden"
               onChange={(e) => {
                 handleMediaUpload(e);
-                setMode("media");
               }}
             />
             <Upload size={18} /> Photo/Video
@@ -169,8 +191,6 @@ const StoryModel = ({ setShowModel, fetchStories }) => {
           onClick={() =>
             toast.promise(handleCreateStory(), {
               loading: "Saving...",
-              success: <p>Story Added</p>,
-              error: (e) => <p>{e.message}</p>,
             })
           }
         >

@@ -11,19 +11,22 @@ const addPost = async (req, res) => {
     const images = req.files;
     let image_urls = [];
 
-    if (images.length) {
+    if (images && images.length > 0) {
       image_urls = await Promise.all(
         images.map(async (image) => {
-          const fileBuffer = fs.readFileSync(image.path);
+          //const fileBuffer = fs.readFileSync(image.path);
+          const base64file = image.buffer.toString("base64");
+
           const response = await imagekit.files.upload({
-            file: fileBuffer,
+            //file: fileBuffer,
+            file: base64file,
             fileName: image.originalname,
             folder: "posts",
           });
 
           const url = imagekit.helper.buildSrc({
-            urlEndPoint: IMAGEKIT_URL_ENDPOINT,
-            src: response.filepath,
+            src: response.filePath,
+            urlEndpoint: IMAGEKIT_URL_ENDPOINT,
             transformation: [
               { quality: "auto", format: "webp", width: "1280" },
             ],

@@ -20,6 +20,7 @@ const Connections = () => {
   const { connections, pendingConnections, followers, following } = useSelector(
     (state) => state.connection,
   );
+
   const [currentTab, setCurrentTab] = useState("Followers");
 
   const dataArray = [

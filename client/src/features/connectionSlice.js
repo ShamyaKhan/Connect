@@ -4,9 +4,10 @@ import api from "../api/axios";
 export const fetchConnections = createAsyncThunk(
   "connections/fetchConnections",
   async (token) => {
-    const { data } = api.get("/api/user/connections", {
+    const { data } = await api.get("/api/user/connections", {
       headers: { Authorization: `Bearer ${token}` },
     });
+
     return data.success ? data : null;
   },
 );

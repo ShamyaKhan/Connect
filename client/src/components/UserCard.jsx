@@ -36,6 +36,21 @@ const UserCard = ({ user }) => {
     if (currentUser.connections.includes(user._id)) {
       return navigate("/messages/" + user._id);
     }
+    try {
+      const { data } = await api.post(
+        "/api/user/connect",
+        { id: user._id },
+        { headers: { Authorization: `Bearer ${await getToken()}` } },
+      );
+
+      if (data.success) {
+        toast.success(data.message);
+      } else {
+        toast.error(data.message);
+      }
+    } catch (err) {
+      toast.error(err.message);
+    }
   };
   return (
     <div

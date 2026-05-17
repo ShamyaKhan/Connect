@@ -1,15 +1,66 @@
 import { useEffect, useRef, useState } from "react";
 import { dummyMessagesData, dummyUserData } from "../assets/assets";
 import { ImageIcon, SendHorizonal } from "lucide-react";
+import { useDispatch, useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
+import { useAuth } from "@clerk/react";
+import api from "../api/axios";
+import {
+  addMessage,
+  fetchMessages,
+  resetMessages,
+} from "../features/messageSlice";
+import toast from "react-hot-toast";
 
 const ChatBox = () => {
-  const messages = dummyMessagesData;
+  const { userId } = useParams();
+  const { getToken } = useAuth();
+  const dispatch = useDispatch();
   const [text, setText] = useState("");
   const [image, setImage] = useState(null);
-  const [user, setUser] = useState(dummyUserData);
+  const [user, setUser] = useState(null);
   const messagesEndRef = useRef(null);
+  const { messages } = useSelector((state) => state.message);
 
-  const sendMessage = async () => {};
+  const fetchUserMessages = async () => {
+    try {
+      const token = await getToken();
+      dispatch(fetchMessages({ token, userId }));
+    } catch (err) {
+      toast.error(err.message);
+    }
+  };
+
+  const sendMessage = async () => {
+    try {
+      if (!text && !image) return;
+      const token = await getToken();
+      const formData = new FormData();
+
+      formData.append("to_user_id", userId);
+      formData.append("text", text);
+      image && formData.append("image", image);
+
+      const { data } = await api.post("/api/message/send", formData, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (data.success) {
+        setText("");
+        setImage("");
+        dispatch(addMessage(data.message));
+      } else {
+        throw new Error(data.message);
+      }
+    } catch (err) {
+      toast.error(err.message);
+    }
+  };
+
+  useEffect(() => {
+    fetchUserMessages();
+    return () => dispatch(resetMessages());
+  }, [userId]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });

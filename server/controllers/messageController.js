@@ -3,7 +3,7 @@ const imagekit = require("../configs/imagekit");
 const { IMAGEKIT_URL_ENDPOINT } = require("../utils/constants");
 const Message = require("../models/Message");
 
-const connections = {};
+let connections = {};
 
 // controller for SSE endpoint
 const sseController = async (req, res) => {
@@ -40,15 +40,16 @@ const sendMessage = async (req, res) => {
     let message_type = image ? "image" : "text";
 
     if (message_type === "image") {
-      const fileBuffer = fs.readFileSync(image.path);
+      const base64file = image.buffer.toString("base64");
       const response = await imagekit.files.upload({
-        file: fileBuffer,
+        file: base64file,
         fileName: image.originalname,
+        folder: "messages",
       });
 
       media_url = imagekit.helper.buildSrc({
-        url_endpoint: IMAGEKIT_URL_ENDPOINT,
-        src: response.filepath,
+        urlEndpoint: IMAGEKIT_URL_ENDPOINT,
+        src: response.filePath,
         transformation: [{ quality: "auto", format: "webp", width: "1280" }],
       });
     }
@@ -64,7 +65,7 @@ const sendMessage = async (req, res) => {
     res.json({ success: true, message });
 
     // send message to receiver using SSE
-    const messageWithUserData = Message.findById(message._id).populate(
+    const messageWithUserData = await Message.findById(message._id).populate(
       "from_user_id",
     );
 

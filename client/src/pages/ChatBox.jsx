@@ -21,6 +21,7 @@ const ChatBox = () => {
   const [user, setUser] = useState(null);
   const messagesEndRef = useRef(null);
   const { messages } = useSelector((state) => state.message);
+  const { connections } = useSelector((state) => state.connection);
 
   const fetchUserMessages = async () => {
     try {
@@ -56,6 +57,13 @@ const ChatBox = () => {
       toast.error(err.message);
     }
   };
+
+  useEffect(() => {
+    if (connections.length > 0) {
+      const user = connections.find((connection) => connection._id === userId);
+      setUser(user);
+    }
+  }, [connections, userId]);
 
   useEffect(() => {
     fetchUserMessages();
